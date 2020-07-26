@@ -2,6 +2,7 @@ package com.example.myapplication.ui.home;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,7 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Constants;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.register.FacebookActivity;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -50,15 +53,16 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         fetchGroup(activity.getIntent().getStringExtra("USER_ID"));
     }
 
-    protected void fetchGroup(String id) {
+    protected void fetchGroup(final String id) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("body", "ToGetInfo")
                 .build();
         Request request = new Request.Builder()
-                .url(String.format("%s/api/recorder/:%s", Constants.SERVER_IP, id))
+                .url(String.format("%s/api/recorder/%s", Constants.SERVER_IP, id))
                 .post(body)
                 .build();
+        Log.d("LogAdapter", request.toString());
 
         client.newCall(request).enqueue(new Callback() {
             @Override

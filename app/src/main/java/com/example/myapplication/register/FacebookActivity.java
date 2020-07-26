@@ -1,18 +1,27 @@
 package com.example.myapplication.register;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Constants;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.SplashActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginBehavior;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -25,6 +34,7 @@ import java.util.Iterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,64 +46,79 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
     private OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private JSONObject userData;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("액티비티 진입", "Facebook activity");
+        setContentView(R.layout.activity_facebook);
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
         if (accessToken != null && !accessToken.isExpired())
-            launchMainActivity(accessToken.getUserId());
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_facebook);
+            {   Log.d("액티비티 facebook", "로그인된 상태");
+                launchMainActivity(accessToken.getUserId());}
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setPermissions("email");
         loginButton.setLoginBehavior(LoginBehavior.WEB_VIEW_ONLY);
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        final String id_from_main = getIntent().getStringExtra("USER_ID");
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                String postBody = "{\n" +
-                        "\"access_token\": \"" + loginResult.getAccessToken().getToken() + "\"\n" +
-                        "}";
-                RequestBody body = RequestBody.create(postBody, JSON);
-                Request request = new Request.Builder()
-                        .url(String.format("%s/auth/login", Constants.SERVER_IP))
-                        .post(body)
-                        .build();
 
-                client.newCall(request).enqueue(new Callback() {
+                final AccessToken accessToken = loginResult.getAccessToken();
+
+                GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
                     @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        call.cancel();
-                    }
+                    public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+                        id = user.optString("id");
 
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        final String jsonString = response.body().string();
-                        userData = null;
-                        boolean isMember = false;
-                        String id = null;
-                        try {
-                            userData = new JSONObject(jsonString);
-                            isMember = userData.getBoolean("member");
-                            id = userData.getString("id");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        OkHttpClient client = new OkHttpClient();
+                        RequestBody body = new FormBody.Builder()
+                                .add("body", "ToGetInfo")
+                                .build();
+                        Request request_ = new Request.Builder()
+                                .url(String.format("%s/api/recorder/%s", Constants.SERVER_IP, id))
+                                .post(body)
+                                .build();
+                        Log.d("Facebook액티비티", request_.toString());
 
-                        if (isMember)
-                            launchMainActivity(id);
-                        else
-                            launchRegisterDialog();
+                        client.newCall(request_).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                Log.d("Facebook액티비티", "failed");
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+
+                                        Toast.makeText(FacebookActivity.this, "서버 연결이 불안정 합니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                call.cancel();
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException{
+                                final String jsonString = response.body().string();
+                                Log.d("main액티비티로", jsonString.toString());
+
+                                if(jsonString.contains("user not found")){ //isMember 대신 사용함
+                                    launchRegisterDialog();
+                                }
+                                else {launchMainActivity(id);}
+                            }
+
+                        });
                     }
-                });
+                }).executeAsync();
             }
 
             @Override
             public void onCancel() {
+
             }
 
             @Override
@@ -101,6 +126,7 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                 finish();
             }
         });
+
     }
 
     public void launchRegisterDialog() {
@@ -115,22 +141,21 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
     }
 
     @Override
-    public void register(String bankType, String accountNumber, String phoneNumber) throws JSONException {
+    public void register(String nickname, String name) throws JSONException {
         Iterator<String> keys = userData.keys();
         JSONObject postBody = new JSONObject();
-        postBody.put("account_number", accountNumber);
-        postBody.put("phone_number", phoneNumber);
-        postBody.put("bank_type", bankType);
         while (keys.hasNext()) {
             String key = keys.next();
             // insert keys except "member"
             if (userData.get(key) instanceof String)
-                postBody.put(key, (String) userData.get(key));
+                postBody.put("facebookID", (String) userData.get(key));
         }
+        postBody.put("name", name);
+        postBody.put("nickname", nickname);
 
         RequestBody body = RequestBody.create(postBody.toString(), JSON);
         Request request = new Request.Builder()
-                .url(String.format("%s/auth/register", Constants.SERVER_IP))
+                .url(String.format("%s/api/register", Constants.SERVER_IP))
                 .post(body)
                 .build();
 
@@ -151,14 +176,17 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                     e.printStackTrace();
                 }
 
-                launchMainActivity(id);
+                //launchMainActivity(id);
+                launchMainActivity(Constants.MY_ID);
             }
         });
     }
 
     public void launchMainActivity(String id) {
-        Intent intent = new Intent(FacebookActivity.this, MainActivity.class);
-        intent.putExtra("USER_ID", id);
+//        Intent intent = new Intent(FacebookActivity.this, MainActivity.class);
+        Intent intent = new Intent(FacebookActivity.this, SplashActivity.class);
+        //intent.putExtra("USER_ID", id);
+        intent.putExtra("USER_ID", Constants.MY_ID);
         startActivity(intent);
         finish();
     }

@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
@@ -19,11 +17,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
 
 public class RegisterDialog extends AppCompatDialogFragment {
-    private TextInputEditText accountNumber;
-    private TextInputEditText phoneNumber;
+    private TextInputEditText Name;
+    private TextInputEditText Nickname;
     private RegisterDialogListener listener;
     private MaterialButton registerButton;
-    private AutoCompleteTextView bankType;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -32,22 +29,18 @@ public class RegisterDialog extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.register_dialog, null);
         builder.setView(view)
                 .setTitle("Register");
-        bankType = view.findViewById(R.id.bank_type);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.bank_type_dropdown, new String[]{ "시간", "횟수" });
-        bankType.setAdapter(adapter);
 
-        accountNumber = view.findViewById(R.id.account_number);
-        phoneNumber = view.findViewById(R.id.phone_number);
+        Nickname = view.findViewById(R.id.enter_nickname);
+        Name = view.findViewById(R.id.enter_name);
         registerButton = view.findViewById(R.id.register_button);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String account = accountNumber.getText().toString();
-                String phone = phoneNumber.getText().toString();
-                String bank = bankType.getText().toString();
+                String phone = Nickname.getText().toString();
+                String name = Name.getText().toString();
 
                 try {
-                    listener.register(bank, account, phone);
+                    listener.register(phone, name);
                 } catch (JSONException e) {
                     Log.e("RegisterDialog", Log.getStackTraceString(e));
                 }
@@ -67,6 +60,6 @@ public class RegisterDialog extends AppCompatDialogFragment {
     }
 
     public interface RegisterDialogListener {
-        void register(String bankType, String accountNumber, String phoneNumber) throws JSONException;
+        void register(String phoneNumber, String name) throws JSONException;
     }
 }

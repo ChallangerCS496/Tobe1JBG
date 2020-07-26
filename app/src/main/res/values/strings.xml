@@ -6,4 +6,8 @@
     <string name="my_group">My Group</string>
     <string name="my_page">My Page</string>
     <string name="start">START</string>
+    <string name="facebook_app_id">617980005811675</string>
+    <string name="fb_login_protocol_scheme">fb617980005811675</string>
+    <string name="server_error">서버 연결이 불안정 합니다.</string>
+
 </resources>
