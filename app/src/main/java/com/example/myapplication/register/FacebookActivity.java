@@ -56,15 +56,13 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
         if (accessToken != null && !accessToken.isExpired())
-            {   Log.d("액티비티 facebook", "로그인된 상태");
-                launchMainActivity(accessToken.getUserId());}
+        {   Log.d("액티비티 facebook", "로그인된 상태");
+            launchMainActivity(accessToken.getUserId());}
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setPermissions("email");
         loginButton.setLoginBehavior(LoginBehavior.WEB_VIEW_ONLY);
-
-        final String id_from_main = getIntent().getStringExtra("USER_ID");
 
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -76,6 +74,7 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                     @Override
                     public void onCompleted(JSONObject user, GraphResponse graphResponse) {
                         id = user.optString("id");
+                        Log.d("facebook액티비티", "id = "+id);
 
                         OkHttpClient client = new OkHttpClient();
                         RequestBody body = new FormBody.Builder()
@@ -142,16 +141,22 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
 
     @Override
     public void register(String nickname, String name) throws JSONException {
-        Iterator<String> keys = userData.keys();
+        //Iterator<String> keys = userData.keys();
         JSONObject postBody = new JSONObject();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            // insert keys except "member"
-            if (userData.get(key) instanceof String)
-                postBody.put("facebookID", (String) userData.get(key));
+//        while (keys.hasNext()) {
+//            String key = keys.next();
+//            // insert keys except "member"
+//            if (userData.get(key) instanceof String)
+//                postBody.put("facebookID", (String) userData.get(key));
+//        }
+        if(id != null) postBody.put("facebookID", id);
+        else {
+            Log.d("가입 액티비티", "id null");
+            finish();
         }
         postBody.put("name", name);
         postBody.put("nickname", nickname);
+        Log.d("가입 액티비티", postBody.toString());
 
         RequestBody body = RequestBody.create(postBody.toString(), JSON);
         Request request = new Request.Builder()
@@ -166,27 +171,26 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                final String jsonString = response.body().string();
-                JSONObject data = null;
-                String id = null;
-                try {
-                    data = new JSONObject(jsonString);
-                    id = data.getString("id");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                final String jsonString = response.body().string();
+//                JSONObject data = null;
+//                String id = null;
+//                try {
+//                    data = new JSONObject(jsonString);
+//                    id = data.getString("id");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
-                //launchMainActivity(id);
-                launchMainActivity(Constants.MY_ID);
+                launchMainActivity(id);
             }
         });
     }
 
-    public void launchMainActivity(String id) {
+    public void launchMainActivity(String id_) {
 //        Intent intent = new Intent(FacebookActivity.this, MainActivity.class);
+        if(id_ == null) Log.d("main액티비티로", "id_ null");
         Intent intent = new Intent(FacebookActivity.this, SplashActivity.class);
-        //intent.putExtra("USER_ID", id);
-        intent.putExtra("USER_ID", Constants.MY_ID);
+        intent.putExtra("USER_ID", id_);
         startActivity(intent);
         finish();
     }

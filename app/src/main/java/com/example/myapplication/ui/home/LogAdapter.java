@@ -45,13 +45,22 @@ import okhttp3.Response;
 
 public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
-    final ArrayList<MyGroupInfo> items = new ArrayList<MyGroupInfo>();
+    ArrayList<MyGroupInfo> items = new ArrayList<MyGroupInfo>();
     //private String mProfileUid = FirebaseAuth.getInstance().getCurrentUser().getUid(); //내 uid
 
-    public LogAdapter(Context context, Activity activity) {
+    public LogAdapter(Context context, Activity activity, ArrayList<MyGroupInfo> n_items) {
         this.context = context;
-        fetchGroup(activity.getIntent().getStringExtra("USER_ID"));
+//        fetchGroup(activity.getIntent().getStringExtra("USER_ID"));
+        this.items = n_items;
+
     }
+
+    public void updateItems(ArrayList<MyGroupInfo> n_items){
+        items.clear();
+        if(items != null) items.addAll(n_items);
+        notifyDataSetChanged();
+    }
+    public int getItemCont(){return items.size();}
 
     protected void fetchGroup(final String id) {
         OkHttpClient client = new OkHttpClient();
@@ -62,7 +71,7 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 .url(String.format("%s/api/recorder/%s", Constants.SERVER_IP, id))
                 .post(body)
                 .build();
-        Log.d("LogAdapter", request.toString());
+        Log.d("LogAdapter_main액티비티", request.toString());
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -94,7 +103,7 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                                 String unit = data.getString("unit");
 
-                                MyGroupInfo add_one = new MyGroupInfo(name, send_type, today, period_unit , unit);
+                                MyGroupInfo add_one = new MyGroupInfo(name, send_type, today, Integer.parseInt(period_unit) , unit);
                                 add_one.setStart_time(str_date);
 
                                 String goal = data.getString("goal");
@@ -115,6 +124,10 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                             notifyDataSetChanged();
                         } catch (JSONException e) {
+                            MyGroupInfo add_one = new MyGroupInfo("그룹을 생성해주세요", 0, 0, 1 , " ");
+                            add_one.setStart_time("2020-01-01 12:00:00");
+                            add_one.calculate_DailyGoal(1);
+                            items.add(add_one);
                             Log.e("ImageGalleryAdapter", Log.getStackTraceString(e));
                         }
                     }
@@ -148,7 +161,7 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
         final MyGroupInfo model = items.get(i);
 
-        if (model.getType()==0) { //내 메세지인 경우
+        if (model.getType()==0) {
             TimeViewHolder holder2 = (TimeViewHolder) holder;
             holder2.groupname.setText(model.getGroup_name());
             holder2.time_cumulate.setText(model.getToday_log()+model.getUnit());
@@ -184,7 +197,8 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return items.size();
+        if(items != null){return items.size();}
+        else {return 0;}
     }
 
 

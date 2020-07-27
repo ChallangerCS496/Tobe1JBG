@@ -23,11 +23,14 @@ public class SplashActivity extends AppCompatActivity {
         startLoading();
     }
     private void startLoading() {
+        Intent intent = getIntent();
+        final String id_ = intent.getStringExtra("USER_ID");
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                intent.putExtra("USER_ID", id_);
                 startActivity(intent);
                 finish();
             }

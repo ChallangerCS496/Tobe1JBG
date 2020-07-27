@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.home;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +18,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 
@@ -33,25 +38,47 @@ public class HomeFragment extends Fragment {
     };
     private static int PERMISSIONS_REQUEST_ALL = 8;
     private RecyclerView recview;
+    private ArrayList<MyGroupInfo> backupList;
+    String id;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        id = getActivity().getIntent().getStringExtra("USER_ID");
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        final Observer<ArrayList<MyGroupInfo>> contactObserver = new Observer<ArrayList<MyGroupInfo>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<MyGroupInfo> newContacts) {
+                adapter.updateItems(newContacts);
+            }
+        };
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recview = root.findViewById(R.id.home_group_list);
-        adapter = new LogAdapter(this.getContext(), this.getActivity());
+        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
+//        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
+        backupList = new ArrayList<>();
+
+
         recview.setLayoutManager(layoutManager);
         recview.setAdapter(adapter);
 
-
+        initializeContacts();
+        homeViewModel.getList().observe(getViewLifecycleOwner(), contactObserver);
 
         requestRequiredPermissions();
         return root;
     }
 
+    private void initializeContacts() {
+        ArrayList<MyGroupInfo> data = homeViewModel.getList().getValue();
+        if (data == null)
+            homeViewModel.init(id);
+        else
+            adapter.updateItems(homeViewModel.getList().getValue());
+        //backupList.addAll(homeViewModel.getList().getValue());
+    }
 
 
     private void requestRequiredPermissions() {

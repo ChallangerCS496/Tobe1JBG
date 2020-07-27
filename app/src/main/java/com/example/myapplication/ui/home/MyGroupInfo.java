@@ -15,9 +15,9 @@ public class MyGroupInfo {
     int daily_goal;//계산해내야함
     String unit;
     ArrayList<String> WiFi_list;
-    String period_unit;
+    int period_unit;
 
-    public MyGroupInfo(String name, int send_type, int today, String period_unit, String unit) {
+    public MyGroupInfo(String name, int send_type, int today, int period_unit, String unit) {
         this.group_name = name;
         this.type = send_type;
         this.today_log = today;
@@ -26,17 +26,8 @@ public class MyGroupInfo {
     }
 
     public int calculate_DailyGoal( int goal){
-        int daily_goal;
-        if(period_unit.equals("일"))
-            daily_goal = goal;
-        else if(period_unit.equals("주"))
-            daily_goal = goal/7;
-        else if(period_unit.equals("월"))
-            daily_goal = goal/30;
-        else daily_goal = goal;
 
-        this.daily_goal = daily_goal;
-        return daily_goal;
+        return goal/period_unit;
     }
 
     public int getDaily_goal() {

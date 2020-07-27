@@ -5,36 +5,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="40dp"
     android:orientation="vertical">
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
+        android:id="@+id/enter_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        >
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/enter_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Name"
-            android:inputType="number"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:hint="Enter Name"
+        android:inputType="text"
+
         />
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
+        android:id="@+id/enter_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        >
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/enter_nickname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Nickname"
-            android:inputType="number"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:hint="Enter Nickname"
+
+        />
     <Space
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -49,7 +34,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             />
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/register_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"

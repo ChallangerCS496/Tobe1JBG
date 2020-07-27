@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="period_unit">
+        <item name="daily">매일</item>
+        <item name="weekly">매주</item>
+        <item name="monthly">매월</item>
+    </string-array>
+</resources>
