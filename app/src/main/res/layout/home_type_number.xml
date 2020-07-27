@@ -38,7 +38,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="디+데이" />
+            android:text="디+데이"
+            android:contentDescription="날짜변경 정보 / 서버에서 받는건 가장 최근 기록과 시간.
+            그 날짜에 따라 표시하는 정보 변경 "/>
 
         <TextView
             android:id="@+id/num_cumulate"

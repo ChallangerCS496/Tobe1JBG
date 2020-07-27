@@ -10,7 +10,6 @@
     android:layout_marginRight="10dp"
     android:layout_marginBottom="5dp"
     android:weightSum="6"
-    android:descendantFocusability="blocksDescendants"
     >
 
     <LinearLayout
@@ -79,6 +78,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:hint="ex) 주당 100시간 몰입"
+                android:inputType="text"
                 />
 
         </LinearLayout>
@@ -200,8 +200,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
                 android:textAlignment="center"
                 android:text="2020-01-01"
                 android:inputType="date"
@@ -212,8 +212,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
                 android:textAlignment="center"
                 android:text="2020-01-01"
                 android:inputType="date"

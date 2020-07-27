@@ -18,7 +18,6 @@ import org.json.JSONException;
 
 public class RegisterDialog extends AppCompatDialogFragment {
     private EditText Name;
-    private EditText Nickname;
     private RegisterDialogListener listener;
     private Button registerButton;
 
@@ -30,17 +29,17 @@ public class RegisterDialog extends AppCompatDialogFragment {
         builder.setView(view)
                 .setTitle("Register");
 
-        Nickname = view.findViewById(R.id.enter_nickname);
+
         Name = view.findViewById(R.id.enter_name);
         registerButton = view.findViewById(R.id.register_button);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String phone = Nickname.getText().toString();
+
                 String name = Name.getText().toString();
 
                 try {
-                    listener.register(phone, name);
+                    listener.register(name);
                 } catch (JSONException e) {
                     Log.e("RegisterDialog", Log.getStackTraceString(e));
                 }
@@ -60,6 +59,6 @@ public class RegisterDialog extends AppCompatDialogFragment {
     }
 
     public interface RegisterDialogListener {
-        void register(String phoneNumber, String name) throws JSONException;
+        void register(String phoneNumber) throws JSONException;
     }
 }
