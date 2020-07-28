@@ -26,6 +26,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -91,11 +92,12 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                             Log.d("main액티비티로", jsonString.toString());
 
                             try {
-                                JSONObject res = new JSONObject(jsonString);
-                                nickname = res.getString("nickname");
+                                JSONArray res = new JSONArray(jsonString);
+                                JSONObject obj = res.getJSONObject(0);
+                                nickname = obj.getString("nickname");
                                 launchMainActivity(ex_id, nickname);
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                Log.d("facebook 액티비티 jsonexeption", Log.getStackTraceString(e));
                             }
                         }
 
@@ -152,10 +154,11 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                                 Log.d("main액티비티로", jsonString.toString());
 
                                 try {
-                                    JSONObject res = new JSONObject(jsonString);
-                                    nickname = res.getString("nickname");
+                                    JSONArray res = new JSONArray(jsonString);
+                                    JSONObject obj = res.getJSONObject(0);
+                                    nickname = obj.getString("nickname");
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Log.d("facebook 액티비티 jsonexeption", Log.getStackTraceString(e));
                                 }
 
                                 if(jsonString.contains("user not found")){ //isMember 대신 사용함
