@@ -49,33 +49,25 @@
             android:layout_gravity="center"
             android:orientation="horizontal"
             >
-            <Button
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:text="-"
-                android:id="@+id/deduct_button"
-                />
             <EditText
                 android:id="@+id/input_number"
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:hint="횟수 입력"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:backgroundTint="@color/white"
                 />
-            <Button
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:text="+"
-                android:id="@+id/add_button"
-                />
+
             <Button
                 android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="SAVE"
+                android:text="+"
+                android:textSize="15sp"
+                android:textAlignment="center"
                 android:id="@+id/save_button"
+                android:background="@color/material_blue"
                 />
 
          </LinearLayout>

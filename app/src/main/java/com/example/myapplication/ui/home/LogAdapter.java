@@ -95,7 +95,8 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder2.groupname.setText(model.getGroup_name());
             try{
                 //holder2.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
-                holder2.percentage.setText(Integer.toString(model.getDaily_goal())+model.getUnit());
+                String show = Integer.toString(model.getDaily_goal())+" "+model.getUnit();
+                holder2.percentage.setText(show);
             }catch(NumberFormatException e){
                 holder2.percentage.setText("0%");
             }
@@ -119,8 +120,9 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder1.percentage.setText("0%");
             }
             holder1.groupname.setText(model.getGroup_name());
-            holder1.num_cumulate.setText(model.getToday_log()+model.getUnit());
-            holder1.input_text.setHint(model.getToday_log());
+            String show2 = model.getToday_log()+" "+model.getUnit();
+            holder1.num_cumulate.setText(show2);
+            holder1.input_text.setHint("0");
 
         }
     }
@@ -158,7 +160,6 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class NumberViewHolder extends RecyclerView.ViewHolder {
         TextView percentage;
         TextView groupname;
-        TextView d_day;
         TextView num_cumulate;
         EditText input_text;
         Button save;
@@ -186,6 +187,8 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     GetUser getUser = new GetUser();
                     Object[] objects = {recent, group, today};
                     getUser.execute(objects);
+
+                    notifyDataSetChanged();
                 }
             });
 

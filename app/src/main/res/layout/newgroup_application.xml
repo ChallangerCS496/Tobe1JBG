@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.core.widget.NestedScrollView
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent">
@@ -8,16 +8,18 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/new_application_top"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:focusable="false"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/layout_cover">
 
             <TextView
                 android:layout_width="@dimen/textview_size"
@@ -25,6 +27,7 @@
                 android:text="목표 측정"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,7 +59,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/layout_cover">
 
             <TextView
                 android:layout_width="@dimen/textview_size"
@@ -64,6 +68,7 @@
                 android:text="그룹 이름"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,7 +93,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/layout_cover">
 
             <TextView
                 android:layout_width="@dimen/textview_size"
@@ -96,6 +102,7 @@
                 android:text="목표"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,6 +150,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:orientation="horizontal"
+            android:background="@drawable/layout_cover"
             >
 
             <TextView
@@ -151,6 +159,7 @@
                 android:text="성공 단위"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -175,6 +184,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:orientation="horizontal"
+            android:background="@drawable/layout_cover"
             >
 
             <TextView
@@ -183,6 +193,7 @@
                 android:text="시작 날짜"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -224,6 +235,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:orientation="horizontal"
+            android:background="@drawable/layout_cover"
             >
 
             <TextView
@@ -232,15 +244,14 @@
                 android:text="멤버 초대"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
+                android:gravity="center">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/party_detail_member_list"
@@ -258,6 +269,8 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:orientation="horizontal"
+            android:background="@drawable/layout_cover"
+            android:focusable="false"
             >
 
             <TextView
@@ -266,14 +279,23 @@
                 android:text="Wifi 확인"
                 android:textSize="@dimen/application_font"
                 android:gravity="center"
+                android:background="@drawable/layout_cover"
                 />
 
-            <ListView
-                android:id="@+id/wifi_list_act"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+                <ListView
+                    android:id="@+id/wifi_list_act"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    android:focusable="true"/>
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

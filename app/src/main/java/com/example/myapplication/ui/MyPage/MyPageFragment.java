@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,22 +28,26 @@ public class MyPageFragment extends Fragment {
         myPageViewModel =
                 ViewModelProviders.of(this).get(MyPageViewModel.class);
         View root = inflater.inflate(R.layout.fragment_mypage, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        textView.setText("Funny page");
+        final Button textView = root.findViewById(R.id.text_notifications);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> random_url = new ArrayList<>();
 
-        ArrayList<String> random_url = new ArrayList<>();
+                random_url.add("https://www.facebook.com/%ED%95%B4%EC%B0%AC%EC%82%AC%EC%A7%84%EB%AA%A8%EC%9D%8C-1762325144081232/");
+                random_url.add("https://battlegroundsmobile.kr/");
+                random_url.add("https://www.youtube.com/watch?v=wN1FHQGj4n0");
+                random_url.add("https://www.youtube.com/watch?v=xCVqH32p4MA");
 
-        random_url.add("https://www.facebook.com/%ED%95%B4%EC%B0%AC%EC%82%AC%EC%A7%84%EB%AA%A8%EC%9D%8C-1762325144081232/");
-        random_url.add("https://battlegroundsmobile.kr/");
-        random_url.add("https://www.youtube.com/watch?v=wN1FHQGj4n0");
-        random_url.add("https://www.youtube.com/watch?v=xCVqH32p4MA");
+                int i = (int) (Math.random()*(random_url.size()));
+                String url = random_url.get( i );
 
-        int i = (int) (Math.random()*(random_url.size()));
-        String url = random_url.get( i );
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+            }
+        });
 
-        startActivity(intent);
 
         return root;
     }
