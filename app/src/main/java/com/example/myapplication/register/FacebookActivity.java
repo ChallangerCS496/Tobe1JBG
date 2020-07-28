@@ -79,7 +79,6 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                             Log.d("Facebook액티비티", "failed"+name);
                             runOnUiThread(new Runnable() {
                                 public void run() {
-
                                     Toast.makeText(FacebookActivity.this, "서버 연결이 불안정 합니다.", Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -100,7 +99,6 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                                 Log.d("facebook 액티비티 jsonexeption", Log.getStackTraceString(e));
                             }
                         }
-
                     });
                 }
             }).executeAsync();

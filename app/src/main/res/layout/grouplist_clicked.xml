@@ -19,7 +19,8 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/grouplist_info"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="210dp"
+                app:cardCornerRadius="10dp"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toTopOf="@id/grouplist_personal_info"
                 app:layout_constraintRight_toLeftOf="parent"
@@ -34,12 +35,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:id="@+id/click_group_id"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
                             android:textSize="30dp"
                             android:text='그룹이름'/>
                         <ImageView
+                            android:id="@+id/click_template"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_alignParentRight="true"
@@ -63,17 +66,20 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <TextView
+                                android:id="@+id/click_period_unit"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="25dp"
                                 android:text="주당"/>
                             <TextView
+                                android:id="@+id/click_goal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
                                 android:textSize="25dp"
                                 android:text="100"/>
                             <TextView
+                                android:id="@+id/click_unit"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="25dp"
@@ -98,6 +104,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <TextView
+                                android:id="@+id/click_period_start"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="25dp"
@@ -109,6 +116,7 @@
                                 android:textSize="25dp"
                                 android:text="-"/>
                             <TextView
+                                android:id="@+id/click_period_end"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="25dp"
@@ -129,6 +137,7 @@
                             android:layout_marginRight="10dp"
                             android:textSize="20dp"/>
                         <TextView
+                            android:id="@+id/click_goal_unit"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:text="JBG"
@@ -139,6 +148,7 @@
                             android:layout_height="match_parent"
                             android:src="@drawable/com_facebook_profile_picture_blank_square"/>
                         <TextView
+                            android:id="@+id/click_members"
                             android:layout_marginLeft="10dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -151,6 +161,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
+                app:cardCornerRadius="10dp"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintTop_toBottomOf="@id/grouplist_info"
                 android:id="@+id/grouplist_personal_info">
@@ -176,6 +187,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintTop_toBottomOf="@id/grouplist_info"
                 android:id="@+id/grouplist_groupranking">
                 <LinearLayout
@@ -195,17 +207,23 @@
                             android:textSize="30dp"
                             android:text='그룹 랭킹'/>
                         <EditText
-                            android:layout_marginLeft="120dp"
+                            android:layout_marginLeft="80dp"
+                            android:id="@+id/serach_index"
                             android:layout_gravity="right"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:text="00"/>
+                            android:text="1"/>
                         <Spinner
                             android:id="@+id/rank_period_unit"
                             android:layout_height="match_parent"
                             android:layout_width="100dp"
                             android:entries="@array/rank_period_unit"
                             android:textAlignment="center"/>
+                        <Button
+                            android:id="@+id/rank_search"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/search" />
                     </LinearLayout>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/grouplist_clicked_rank_recyclerview"

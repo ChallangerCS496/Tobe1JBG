@@ -8,6 +8,6 @@
     <string-array name="rank_period_unit">
         <item name="daily">일차</item>
         <item name="weekly">주차</item>
-        <item name="monthly">개월차</item>
+        <item name="monthly">월차</item>
     </string-array>
 </resources>

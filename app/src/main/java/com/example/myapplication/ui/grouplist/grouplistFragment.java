@@ -224,9 +224,30 @@ public class GroupListFragment extends Fragment{
         Group_list.setOnItemClickListener(new FamiliarRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(FamiliarRecyclerView familiarRecyclerView, View view, int position) {
-                String select_name = groupData.getGroupDataList().get(position).getGroup_id();
-                //이 부분 짜기!
-                Toast.makeText(getActivity(), "[" + select_name + "](" + position + ") 선택", Toast.LENGTH_SHORT).show();
+                String group_id = groupData.getGroupDataList().get(position).getGroup_id();
+                int period_unit = groupData.getGroupDataList().get(position).getGroup_period_unit();
+                int goal = groupData.getGroupDataList().get(position).getGroup_goal();
+                String unit = groupData.getGroupDataList().get(position).getGroup_unit();
+                String period_start = groupData.getGroupDataList().get(position).getGroup_period_start();
+                String period_end = groupData.getGroupDataList().get(position).getGroup_period_end();
+                String template = groupData.getGroupDataList().get(position).getGroup_template();
+                String goal_unit =  groupData.getGroupDataList().get(position).getGroup_goal_unit();
+                int members = groupData.getGroupDataList().get(position).getGroup_members();
+
+                Intent intent = new Intent(getActivity(), GroupClickedActivity.class);
+                intent.putExtra("userid",id);
+                intent.putExtra("nickname",NICKNAME);
+
+                intent.putExtra("group_id",group_id);
+                intent.putExtra("goal",goal);
+                intent.putExtra("unit",unit);
+                intent.putExtra("period_start",period_start);
+                intent.putExtra("period_unit",period_unit);
+                intent.putExtra("period_end",period_end);
+                intent.putExtra("template",template);
+                intent.putExtra("goal_unit",goal_unit);
+                intent.putExtra("members",members);
+                startActivity(intent);
             }
         });
 
@@ -334,7 +355,6 @@ public class GroupListFragment extends Fragment{
         }
 
         get_GroupData(id); //데이터 Reload//
-
 
     }
 

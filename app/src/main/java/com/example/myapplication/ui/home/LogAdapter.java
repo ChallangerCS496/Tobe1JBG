@@ -98,9 +98,13 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             Calendar calendar = new GregorianCalendar(Locale.KOREA);
 
-            long diff = calendar.getTimeInMillis()*1000 - model.getStart_time().getTime();//null object reference
-            long dday = diff/(24*60*60*1000);
-            holder1.d_day.setText("D+"+Long.toString(dday));
+            try{
+                long diff = calendar.getTimeInMillis()*1000 - model.getStart_time().getTime();//null object reference
+                long dday = diff/(24*60*60*1000);
+                holder1.d_day.setText("D+"+Long.toString(dday));
+            }catch(NullPointerException e){
+                holder1.d_day.setText("Error on LogAdapter 107");
+            }
 
         }
     }
