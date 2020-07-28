@@ -1,5 +1,4 @@
 package com.example.myapplication.register;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,18 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.appcompat.app.AppCompatDialogFragment;
-
 import com.example.myapplication.R;
-
 import org.json.JSONException;
-
 public class RegisterDialog extends AppCompatDialogFragment {
-    private EditText Name;
+    private EditText Name, Nickname;
     private RegisterDialogListener listener;
     private Button registerButton;
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -28,18 +22,16 @@ public class RegisterDialog extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.register_dialog, null);
         builder.setView(view)
                 .setTitle("Register");
-
-
         Name = view.findViewById(R.id.enter_name);
+        Nickname = view.findViewById(R.id.enter_nickname);
         registerButton = view.findViewById(R.id.register_button);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String name = Name.getText().toString();
-
+                String nick = Nickname.getText().toString();
                 try {
-                    listener.register(name);
+                    listener.register(name, nick);
                 } catch (JSONException e) {
                     Log.e("RegisterDialog", Log.getStackTraceString(e));
                 }
@@ -47,7 +39,6 @@ public class RegisterDialog extends AppCompatDialogFragment {
         });
         return builder.create();
     }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -57,8 +48,7 @@ public class RegisterDialog extends AppCompatDialogFragment {
             throw new ClassCastException(context.toString() + " must implement RegisterDialogListener!");
         }
     }
-
     public interface RegisterDialogListener {
-        void register(String phoneNumber) throws JSONException;
+        void register(String phoneNumber, String nickname) throws JSONException;
     }
 }

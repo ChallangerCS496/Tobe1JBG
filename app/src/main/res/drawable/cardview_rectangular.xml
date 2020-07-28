@@ -9,6 +9,6 @@
         android:topLeftRadius="12dp"
         android:topRightRadius="12dp" />
     <stroke
-        android:width="2dp"
-        android:color="#ABABAC" />
+        android:width="0.1dp"
+        android:color="@color/cardview_dark_background" />
 </shape>

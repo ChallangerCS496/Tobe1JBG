@@ -89,18 +89,16 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
         final MyGroupInfo model = items.get(i);
-
         if (model.getType()==0) {
             TimeViewHolder holder2 = (TimeViewHolder) holder;
             holder2.groupname.setText(model.getGroup_name());
             try{
-                //holder2.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
-                String show = Integer.toString(model.getDaily_goal())+" "+model.getUnit();
-                holder2.percentage.setText(show);
+                holder2.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
+//                String show = Integer.toString(model.getDaily_goal())+" "+model.getUnit();
+//                holder2.percentage.setText(show);
             }catch(NumberFormatException e){
                 holder2.percentage.setText("0%");
             }
-
             Date date = model.getStart_time();
             SimpleDateFormat transformat = new SimpleDateFormat("MM-dd");
             if(date == null){
@@ -108,22 +106,18 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 holder2.time_start.setText(transformat.format(date));
             }
-
-
         } else {
             NumberViewHolder holder1 = (NumberViewHolder) holder;
-
             try{
-                holder1.percentage.setText(Integer.toString(model.getDaily_goal()) + model.getUnit());
-//                holder1.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
+//                holder1.percentage.setText(Integer.toString(model.getDaily_goal()) + model.getUnit());
+                holder1.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
             }catch(NumberFormatException e){
                 holder1.percentage.setText("0%");
             }
             holder1.groupname.setText(model.getGroup_name());
             String show2 = model.getToday_log()+" "+model.getUnit();
             holder1.num_cumulate.setText(show2);
-            holder1.input_text.setHint("0");
-
+            holder1.input_text.setHint("횟수 입력");
         }
     }
 
