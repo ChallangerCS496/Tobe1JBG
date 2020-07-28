@@ -80,7 +80,12 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             Date date = model.getStart_time();
             SimpleDateFormat transformat = new SimpleDateFormat("MM-dd");
-            holder2.time_start.setText(transformat.format(date));
+            if(date == null){
+                holder2.time_start.setText("-");
+            } else {
+                holder2.time_start.setText(transformat.format(date));
+            }
+
 
         } else {
             NumberViewHolder holder1 = (NumberViewHolder) holder;
