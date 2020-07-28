@@ -17,15 +17,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Constants;
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.register.FacebookActivity;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -101,7 +93,7 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             Calendar calendar = new GregorianCalendar(Locale.KOREA);
 
-            long diff = calendar.getTimeInMillis()*1000 - model.getStart_time().getTime();
+            long diff = calendar.getTimeInMillis()*1000 - model.getStart_time().getTime();//null object reference
             long dday = diff/(24*60*60*1000);
             holder1.d_day.setText("D+"+Long.toString(dday));
 

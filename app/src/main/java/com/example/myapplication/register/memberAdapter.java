@@ -80,19 +80,17 @@ public class memberAdapter extends RecyclerView.Adapter<memberAdapter.memberView
         else return 0;
     }
 
-    public String generatePartyString() {
-        String members = "[ \"" + my_nickname + "\",";//Todo 닉네임을 찾아라
-        int count = 0;
+    public ArrayList<String> generatePartyString() {
+//        String members = "[ \"" + my_nickname + "\",";//Todo 닉네임을 찾아라
+        ArrayList members = new ArrayList();
+        members.add(my_nickname);
+
+
         for (Integer index : selectedUsers) {
-            members += String.format("\"%s\"", UserList.get(index).getNickname());
-            count += 1;
-            if (count == selectedUsers.size())
-                members += " ]";
-            else
-                members += ",";
+            members.add(UserList.get(index).getNickname());
         }
 
-        Log.d("액티비티 memberAdapter", members);
+        Log.d("액티비티 memberAdapter", members.toString());
         return members;
     }
 

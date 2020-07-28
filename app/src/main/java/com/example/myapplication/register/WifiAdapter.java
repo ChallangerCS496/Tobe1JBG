@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WifiAdapter extends ArrayAdapter<WifiData> {
@@ -27,9 +28,8 @@ public class WifiAdapter extends ArrayAdapter<WifiData> {
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); // xml파일을 레이아웃 서비스를 가능하게 만들어주는 객체
     }
 
-    public String generatePartyString() {
-        String members = "[ ";
-        String except = "[]";
+    public ArrayList<String> generatePartyString() {
+        ArrayList<String> members = new ArrayList<String>();
         int max3;
 
         if(objects.size()%3 == 0) max3 = 1;
@@ -37,18 +37,13 @@ public class WifiAdapter extends ArrayAdapter<WifiData> {
 
         try {
             for(int i = 0; i<max3; i++){
-                members += String.format("\"%s\"", objects.get(i).getSSID());
-                if (i == max3)
-                    members += " ]";
-                else
-                    members += ",";
+                members.add(objects.get(i).getSSID());
             }
-            return members;
 
             }catch (NullPointerException e){
             Log.d("그룹추가 adpater", Log.getStackTraceString(e));
-            return except;
         }
+        return members;
     }
 
     @Override

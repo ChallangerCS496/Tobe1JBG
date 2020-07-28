@@ -270,12 +270,10 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
 
             String goal_unit = goalUnit.getText().toString();
 
-            String mem = adapter.generatePartyString();
-
             String PERIOD = Integer.toString(day_period);
 
-            String wifiname = list_adapter.generatePartyString();
-            send_NewGroup(group_Name, templ, mem, period_start, period_end, goal_num, unit_num, PERIOD, wifiname , goal_unit);
+            ArrayList<String> wifiname = list_adapter.generatePartyString();
+            send_NewGroup(group_Name, templ, adapter.generatePartyString(), period_start, period_end, goal_num, unit_num, PERIOD, wifiname , goal_unit);
             res = true;
 
         }catch (NullPointerException | JSONException e){
@@ -286,12 +284,12 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
         return res;
     }
 
-    public void send_NewGroup(String GN, String temp, String mem, String PS, String PE, String Goal, String unit, String p_unit, String wifi, String GU) throws JSONException {
+    public void send_NewGroup(String GN, String temp, ArrayList<String> mem, String PS, String PE, String Goal, String unit, String p_unit, ArrayList<String> wifi, String GU) throws JSONException {
 
         OkHttpClient client = new OkHttpClient();
         JSONObject postBody = new JSONObject();
         //Todo adapter에서 nickname 찾기
-        postBody.put("members", mem);
+        postBody.put("members", new JSONArray(mem));
         //period_start 2020/00/00 형식으로
         postBody.put("period_start", PS);
         //period_end 2020/00/00형식으로
@@ -304,7 +302,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
         postBody.put("period_unit", p_unit);
          //goal_unit JBG
         postBody.put("goal_unit", GU);
-        postBody.put("Wifi", wifi);
+        postBody.put("Wifi", new JSONArray(wifi));
         RequestBody body = RequestBody.create(postBody.toString(), JSON);
 
         final Request request = new Request.Builder()
