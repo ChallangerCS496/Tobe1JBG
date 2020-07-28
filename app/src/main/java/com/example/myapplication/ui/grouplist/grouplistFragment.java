@@ -20,11 +20,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class grouplistFragment extends Fragment implements View.OnClickListener {
 
     private grouplistViewModel grouplistViewModel;
-    private String id;
+    private String id, NICKNAME;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         id = getActivity().getIntent().getStringExtra("USER_ID");
+        NICKNAME = getActivity().getIntent().getStringExtra("NICKNAME");
 
         grouplistViewModel =
                 ViewModelProviders.of(this).get(grouplistViewModel.class);
@@ -55,8 +56,11 @@ public class grouplistFragment extends Fragment implements View.OnClickListener 
     }
 
     private void create_new_group(){
+
         Intent intent = new Intent(getContext(), NewGroupActivity.class);
         intent.putExtra("USER_ID", id);
+        intent.putExtra("NICKNAME", NICKNAME);
+
         startActivity(intent);
 
     }

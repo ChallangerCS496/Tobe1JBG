@@ -46,7 +46,7 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
     private OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private JSONObject userData;
-    private String id, name;
+    private String id, name, nickname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,53 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
 
         if (accessToken != null && !accessToken.isExpired())
         {   Log.d("액티비티 facebook", "로그인된 상태");
-            launchMainActivity(accessToken.getUserId());}
+            final String ex_id = accessToken.getUserId();
+            GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                @Override
+                public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody body = new FormBody.Builder()
+                            .add("body", "ToGetInfo")
+                            .build();
+                    Request request_ = new Request.Builder()
+                            .url(String.format("%s/api/recorder/%s", Constants.SERVER_IP, ex_id))
+                            .post(body)
+                            .build();
+                    Log.d("Facebook액티비티", request_.toString());
+
+                    client.newCall(request_).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Log.d("Facebook액티비티", "failed"+name);
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+
+                                    Toast.makeText(FacebookActivity.this, "서버 연결이 불안정 합니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            call.cancel();
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException{
+                            final String jsonString = response.body().string();
+                            Log.d("main액티비티로", jsonString.toString());
+
+                            try {
+                                JSONObject res = new JSONObject(jsonString);
+                                nickname = res.getString("nickname");
+                                launchMainActivity(ex_id, nickname);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    });
+                }
+            }).executeAsync();
+
+        }
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
@@ -105,10 +151,17 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                                 final String jsonString = response.body().string();
                                 Log.d("main액티비티로", jsonString.toString());
 
+                                try {
+                                    JSONObject res = new JSONObject(jsonString);
+                                    nickname = res.getString("nickname");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
                                 if(jsonString.contains("user not found")){ //isMember 대신 사용함
                                     launchRegisterDialog();
                                 }
-                                else {launchMainActivity(id);}
+                                else {launchMainActivity(id, nickname);}
                             }
 
                         });
@@ -141,7 +194,7 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
     }
 
     @Override
-    public void register(String nickname) throws JSONException { //facebook name 쓰고있음
+    public void register(final String nickname) throws JSONException { //facebook name 쓰고있음
         JSONObject postBody = new JSONObject();
         if(id != null){
 //            postBody.put("facebookID", id);
@@ -173,7 +226,7 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
 //                    e.printStackTrace();
 //                }
 
-                    launchMainActivity(id);
+                    launchMainActivity(id, nickname);
                 }
             });
         }
@@ -184,11 +237,13 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
 
     }
 
-    public void launchMainActivity(String id_) {
+    public void launchMainActivity(String id_, String nickname_) {
 //        Intent intent = new Intent(FacebookActivity.this, MainActivity.class);
         if(id_ == null) Log.d("main액티비티로", "id_ null");
         Intent intent = new Intent(FacebookActivity.this, SplashActivity.class);
         intent.putExtra("USER_ID", id_);
+        intent.putExtra("NICKNAME", nickname_);
+        Log.d("닉네임 intent로 전달", id_+" "+nickname_);
         startActivity(intent);
         finish();
     }

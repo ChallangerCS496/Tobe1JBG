@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -70,7 +71,6 @@ public class HomeViewModel extends ViewModel {
                             for(int j=0; j<total.length(); j++){
                                 JSONObject data = total.getJSONObject(j);
 
-
                                 String name = data.getString("groupID");
                                 String type_ = data.getString("template");
                                 int send_type = 1;
@@ -102,7 +102,8 @@ public class HomeViewModel extends ViewModel {
                                 groupList.setValue(tmp_list);
                             }
 
-                        } catch (JSONException e) {
+                        } catch (JSONException|NullPointerException e) {
+
                             ArrayList<MyGroupInfo> tmp_list = new ArrayList<MyGroupInfo>();
                             MyGroupInfo add_one = new MyGroupInfo("그룹을 생성해주세요", 0, 0, 1 , " ");
                             add_one.setStart_time("2020-01-01 12:00:00");

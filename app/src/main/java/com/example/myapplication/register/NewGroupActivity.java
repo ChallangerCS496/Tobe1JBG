@@ -1,7 +1,15 @@
 package com.example.myapplication.register;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,14 +19,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,6 +55,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 public class NewGroupActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button type_0, type_1;
@@ -50,23 +64,95 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
     private Spinner period_unit;
     private int day_period;
     private DatePickerDialog.OnDateSetListener callbackMethod;
-    private String id, Period_Unit;
+    private String id, Period_Unit, nickname_from_intent;
     private memberAdapter adapter;
+    private WifiAdapter list_adapter;
     private RecyclerView recyclerView;
+    private ListView listview;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private WifiManager wifiManager;
+    private ArrayList<WifiData> wifidata;
+    private List<ScanResult> scanDatas;
+    private static String[] requiredPermissions = new String[]{
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
+    };
+    private static int PERMISSIONS_REQUEST_ALL = 8;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if(action.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                scanDatas = wifiManager.getScanResults();
+                //Toast.makeText(getApplicationContext(), scanDatas.get(0).SSID, Toast.LENGTH_SHORT).show();
+
+                wifidata = new ArrayList<>();
+                for(ScanResult select : scanDatas){
+                    String BBSID = select.BSSID;
+                    String SSID = select.SSID;
+                    WifiData wifiData = new WifiData(BBSID, SSID, false);
+                    wifidata.add(wifiData);
+                }
+
+                // 어댑터
+                list_adapter = new WifiAdapter(getApplicationContext(), R.layout.wifi_row_layout, wifidata);
+                listview.setAdapter(list_adapter);
+
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        //Toast.makeText(getApplicationContext(), wifidata.get(i).getSSID(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                // listview 갱신
+                adapter.notifyDataSetChanged();
+
+            }else if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                sendBroadcast(new Intent("wifi.ON_NETWORK_STATE_CHANGED"));
+            }
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        registerReceiver(receiver, intentFilter);
+        wifiManager.startScan();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newgroup_application);
+        requestRequiredPermissions();
+
+        wifiManager = (WifiManager) getSystemService(this.WIFI_SERVICE);
+        if(!wifiManager.isWifiEnabled()){
+            wifiManager.setWifiEnabled(true);
+        }
 
         id = this.getIntent().getStringExtra("USER_ID");
+        nickname_from_intent = this.getIntent().getStringExtra("NICKNAME");
+        Log.d("닉네임", nickname_from_intent);
 
         recyclerView = (RecyclerView) findViewById(R.id.party_detail_member_list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
-        adapter = new memberAdapter(id, new ArrayList<User>());
+        adapter = new memberAdapter(id, new ArrayList<User>(), nickname_from_intent);
         recyclerView.setLayoutManager(layoutManager);
+
+        listview = (ListView) findViewById(R.id.wifi_list_act);
+
         new GetUser().execute(new String() ); // user 셋팅한다.
 
         ActionBar actionBar = getSupportActionBar();
@@ -159,7 +245,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public boolean nullcheck(){
-        boolean res;
+        boolean res = true;
         try{
 
             String group_Name = group_name.getText().toString();
@@ -185,7 +271,11 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
             String goal_unit = goalUnit.getText().toString();
 
             String mem = adapter.generatePartyString();
-            send_NewGroup(group_Name, templ, mem, period_start, period_end, goal_num, unit_num, Period_Unit, mem, goal_unit);
+
+            String PERIOD = Integer.toString(day_period);
+
+            String wifiname = list_adapter.generatePartyString();
+            send_NewGroup(group_Name, templ, mem, period_start, period_end, goal_num, unit_num, PERIOD, wifiname , goal_unit);
             res = true;
 
         }catch (NullPointerException | JSONException e){
@@ -210,16 +300,14 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
         postBody.put("goal", Goal);
         //unit 1초 1000
         postBody.put("unit", unit);
-        //period_unit 일주월
+        //period_unit 1730
         postBody.put("period_unit", p_unit);
-        //Todo get Wifi 리스트
-        postBody.put("Wifi", "[]");
-        //goal_unit JBG
+         //goal_unit JBG
         postBody.put("goal_unit", GU);
-
+        postBody.put("Wifi", wifi);
         RequestBody body = RequestBody.create(postBody.toString(), JSON);
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(String.format("%s/api/create/%s/%s", Constants.SERVER_IP,GN, temp))//group name, time or number
                 .post(body)
                 .build();
@@ -232,10 +320,11 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                Log.d("그룹추가 액티비티", response.toString());
+                Log.d("그룹추가 액티비티", request.toString());
                 finish();
             }
         });
+
     }
 
     @Override
@@ -243,6 +332,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
         getMenuInflater().inflate(R.menu.newgroup_done, menu);
         return true;
     }
+
 
     private class GetUser extends AsyncTask {
 
@@ -260,7 +350,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
                     .url(String.format("%s/api/create/users/%s", Constants.SERVER_IP, id))
                     .post(body)
                     .build();
-            Log.d("가입 액티비티" , request.toString());
+            Log.d("그룹추가 액티비티" , request.toString());
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
@@ -277,7 +367,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             try {
                                 JSONArray total = new JSONArray(jsonString);
-                                Log.d("가입 액티비티" , jsonString);
+                                Log.d("그룹추가 액티비티" , jsonString);
 
                                 for(int j=0; j<total.length(); j++){
                                     JSONObject data = total.getJSONObject(j);
@@ -291,7 +381,7 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
                                 adapter.setUserList(tmp);
                                 recyclerView.setAdapter(adapter);
 
-                                Log.d("가입액티비티 UserList size", Integer.toString(adapter.getItemCount()));
+                                Log.d("그룹추가 액티비티 UserList size", Integer.toString(adapter.getItemCount()));
 
                             } catch (JSONException e) {
                                 Log.e("ImageGalleryAdapter", Log.getStackTraceString(e));
@@ -300,14 +390,31 @@ public class NewGroupActivity extends AppCompatActivity implements View.OnClickL
                                 adapter.setUserList(tmp);
                                 recyclerView.setAdapter(adapter);
 
-                                Log.d("가입액티비티 UserList size", Integer.toString(adapter.getItemCount()));
+                                Log.d("그룹추가 액티비티 UserList size", Integer.toString(adapter.getItemCount()));
                             }
                         }
                     });
                 }
             });
+
+
+
             return objects;
         }
+    }
+
+    private void requestRequiredPermissions() {
+        boolean allGranted = true;
+        for (String permission : this.requiredPermissions) {
+            boolean granted = ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+            allGranted = allGranted & granted;
+        }
+
+        if (!allGranted)
+            ActivityCompat.requestPermissions(NewGroupActivity.this, requiredPermissions, PERMISSIONS_REQUEST_ALL);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
     }
 
 }

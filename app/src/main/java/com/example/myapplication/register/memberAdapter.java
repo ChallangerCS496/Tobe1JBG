@@ -39,14 +39,15 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class memberAdapter extends RecyclerView.Adapter<memberAdapter.memberViewHolder>{
     private ArrayList<User> UserList;
-    private String fb_id;
+    private String fb_id, my_nickname;
     private HashSet<Integer> selectedUsers;
 
-    public memberAdapter(String id, ArrayList<User> users){
+    public memberAdapter(String id, ArrayList<User> users, String my_nickname){
         this.fb_id = id;
         //fetch_member();
         this.UserList = users;
         this.selectedUsers = new HashSet<>();
+        this.my_nickname = my_nickname;
     }
 
     public void setUserList(ArrayList<User> userList) {
@@ -80,8 +81,7 @@ public class memberAdapter extends RecyclerView.Adapter<memberAdapter.memberView
     }
 
     public String generatePartyString() {
-        String members = "[ \"" + "kgy556" + "\",";//Todo 닉네임을 찾아라
-
+        String members = "[ \"" + my_nickname + "\",";//Todo 닉네임을 찾아라
         int count = 0;
         for (Integer index : selectedUsers) {
             members += String.format("\"%s\"", UserList.get(index).getNickname());
@@ -92,6 +92,7 @@ public class memberAdapter extends RecyclerView.Adapter<memberAdapter.memberView
                 members += ",";
         }
 
+        Log.d("액티비티 memberAdapter", members);
         return members;
     }
 
