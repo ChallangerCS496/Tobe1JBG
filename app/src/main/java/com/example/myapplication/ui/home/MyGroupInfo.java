@@ -25,9 +25,9 @@ public class MyGroupInfo {
         this.unit = unit;
     }
 
-    public int calculate_DailyGoal( int goal){
+    public void calculate_DailyGoal( int goal){
 
-        return goal/period_unit;
+        this.daily_goal = goal;
     }
 
     public int getDaily_goal() {
@@ -63,7 +63,15 @@ public class MyGroupInfo {
     }
 
     public String getUnit() {
-        return unit;
+        try{
+            int num = Integer.parseInt(unit);
+            if(num <= 1000) return "초";
+            else if(num <= 60000 ) return "분";
+            else return "시간";
+
+        }catch (Exception e){
+            return unit;
+        }
     }
 
     public void setUnit(String unit) {
@@ -79,8 +87,14 @@ public class MyGroupInfo {
     }
 
     public double getWorkDone(){
-        double work = (double)today_log/daily_goal;
-        return work*100;
+        if(daily_goal > 0){
+            double work = (double)today_log/(double)daily_goal;
+            return work*100;
+        }
+        else{
+            return 0;
+        }
+
     }
 
     public Date getStart_time() {

@@ -61,6 +61,7 @@ public class HomeViewModel extends ViewModel {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String jsonString = response.body().string();
+                Log.d("group info 액티비티", jsonString);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     public void run() {
@@ -111,6 +112,7 @@ public class HomeViewModel extends ViewModel {
                             tmp_list.add(add_one);
                             Log.e("ImageGalleryAdapter", Log.getStackTraceString(e));
                             groupList.setValue(tmp_list);
+
                         }
                     }
                 });

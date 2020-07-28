@@ -3,6 +3,7 @@ package com.example.myapplication.ui.home;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,7 +18,16 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Constants;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.register.NewGroupActivity;
+import com.example.myapplication.register.User;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,16 +37,24 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     ArrayList<MyGroupInfo> items = new ArrayList<MyGroupInfo>();
-    //private String mProfileUid = FirebaseAuth.getInstance().getCurrentUser().getUid(); //내 uid
+    String id;
 
-    public LogAdapter(Context context, Activity activity, ArrayList<MyGroupInfo> n_items) {
+    public LogAdapter(Context context, Activity activity, ArrayList<MyGroupInfo> n_items, String id) {
         this.context = context;
 //        fetchGroup(activity.getIntent().getStringExtra("USER_ID"));
         this.items = n_items;
-
+        this.id = id;
     }
 
     public void updateItems(ArrayList<MyGroupInfo> n_items){
@@ -75,8 +93,13 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (model.getType()==0) {
             TimeViewHolder holder2 = (TimeViewHolder) holder;
             holder2.groupname.setText(model.getGroup_name());
-            holder2.time_cumulate.setText(model.getToday_log()+model.getUnit());
-            holder2.percentage.setText(Double.toString(model.getWorkDone())+"%");
+            try{
+                //holder2.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
+                String show = Integer.toString(model.getDaily_goal())+" "+model.getUnit();
+                holder2.percentage.setText(show);
+            }catch(NumberFormatException e){
+                holder2.percentage.setText("0%");
+            }
 
             Date date = model.getStart_time();
             SimpleDateFormat transformat = new SimpleDateFormat("MM-dd");
@@ -90,21 +113,16 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else {
             NumberViewHolder holder1 = (NumberViewHolder) holder;
 
-            holder1.percentage.setText(Double.toString(model.getWorkDone())+"%");
-            holder1.groupname.setText(model.getGroup_name());
-            holder1.num_cumulate.setText(model.getToday_log()+model.getUnit());
-            holder1.input_text.setHint(model.getToday_log());
-            //d_day 계산하기
-
-            Calendar calendar = new GregorianCalendar(Locale.KOREA);
-
             try{
-                long diff = calendar.getTimeInMillis()*1000 - model.getStart_time().getTime();//null object reference
-                long dday = diff/(24*60*60*1000);
-                holder1.d_day.setText("D+"+Long.toString(dday));
-            }catch(NullPointerException e){
-                holder1.d_day.setText("Error on LogAdapter 107");
+                holder1.percentage.setText(Integer.toString(model.getDaily_goal()) + model.getUnit());
+//                holder1.percentage.setText(Double.toString(model.getWorkDone())+"%"); //for test
+            }catch(NumberFormatException e){
+                holder1.percentage.setText("0%");
             }
+            holder1.groupname.setText(model.getGroup_name());
+            String show2 = model.getToday_log()+" "+model.getUnit();
+            holder1.num_cumulate.setText(show2);
+            holder1.input_text.setHint("0");
 
         }
     }
@@ -126,7 +144,6 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class TimeViewHolder extends RecyclerView.ViewHolder {
         TextView percentage;
         TextView groupname;
-        TextView time_cumulate;
         TextView time_start;
 
 
@@ -134,7 +151,6 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             percentage = itemView.findViewById(R.id.work_done_percentage);
             groupname = itemView.findViewById(R.id.group_name);
-            time_cumulate = itemView.findViewById(R.id.time_cumulate);
             time_start = itemView.findViewById(R.id.time_start);
 
         }
@@ -144,18 +160,86 @@ public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class NumberViewHolder extends RecyclerView.ViewHolder {
         TextView percentage;
         TextView groupname;
-        TextView d_day;
         TextView num_cumulate;
         EditText input_text;
+        Button save;
 
         public NumberViewHolder (@NonNull final View itemView) {
             super(itemView);
             percentage = itemView.findViewById(R.id.work_done_percentage2);
             groupname = itemView.findViewById(R.id.group_name2);
-            d_day = itemView.findViewById(R.id.dday);
             num_cumulate = itemView.findViewById(R.id.num_cumulate);
             input_text = itemView.findViewById(R.id.input_number);
+            save = itemView.findViewById(R.id.save_button);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("Logadpater 액티비티", "클릭은 되니");
+                    int position = getLayoutPosition();
+                    MyGroupInfo item = items.get(position);
+
+                    int recent = Integer.parseInt(input_text.getText().toString());
+                    int today = Integer.parseInt(item.getToday_log());
+                    item.setToday_log(today+recent);
+
+                    String group = item.getGroup_name();
+                    GetUser getUser = new GetUser();
+                    Object[] objects = {recent, group, today};
+                    getUser.execute(objects);
+
+                    notifyDataSetChanged();
+                }
+            });
+
+        }
+    }
+
+
+    private class GetUser extends AsyncTask {
+
+        @Override
+        protected void onPostExecute(Object obj){
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            int num = (int) objects[0];
+            String group = (String) objects[1];
+            int daycount = (int) objects[2];
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("count", Integer.toString(num))
+                    .build();
+            final Request request = new Request.Builder()
+                    .addHeader("Connection", "close")
+                    .url(String.format("%s/api/recorder/count/%s/%s/%s", Constants.SERVER_IP, id, group, Integer.toString(daycount)))
+                    .post(body)
+                    .build();
+            Log.d("logadapter add 액티비티" , Integer.toString(num)+request.toString());
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Log.d("Log Adapter 액티비티 fail", Log.getStackTraceString(e));
+                    call.cancel();
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String jsonString = response.body().string();
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        public void run() {
+                            Log.d("Log Adapter 액티비티", request.toString());
+                            Log.d("Log Adapter 액티비티", response.toString());
+                        }
+                    });
+                }
+            });
+
+            return objects;
         }
     }
 
