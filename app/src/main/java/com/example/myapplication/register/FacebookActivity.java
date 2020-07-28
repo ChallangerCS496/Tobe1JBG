@@ -97,6 +97,13 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                                 nickname = obj.getString("nickname");
                                 launchMainActivity(ex_id, nickname);
                             } catch (JSONException e) {
+                                try {
+                                    JSONObject obj = new JSONObject(jsonString);
+                                    nickname = obj.getString("nickname");
+                                    launchMainActivity(ex_id, nickname);
+                                } catch (JSONException ex) {
+                                    ex.printStackTrace();
+                                }
                                 Log.d("facebook 액티비티 jsonexeption", Log.getStackTraceString(e));
                             }
                         }
@@ -158,6 +165,12 @@ public class FacebookActivity extends AppCompatActivity implements RegisterDialo
                                     JSONObject obj = res.getJSONObject(0);
                                     nickname = obj.getString("nickname");
                                 } catch (JSONException e) {
+                                    try {
+                                        JSONObject obj = new JSONObject(jsonString);
+                                        nickname = obj.getString("nickname");
+                                    } catch (JSONException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     Log.d("facebook 액티비티 jsonexeption", Log.getStackTraceString(e));
                                 }
 

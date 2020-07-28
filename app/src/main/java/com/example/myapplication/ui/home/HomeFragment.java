@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         };
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recview = root.findViewById(R.id.home_group_list);
-        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
+        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>(), id);
 
         backupList = new ArrayList<>();
 
