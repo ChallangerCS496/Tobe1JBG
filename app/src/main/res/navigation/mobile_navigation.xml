@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_grouplist"
-        android:name="com.example.myapplication.ui.grouplist.grouplistFragment"
+        android:name="com.example.myapplication.ui.grouplist.GroupListFragment"
         android:label="@string/my_group"
         tools:layout="@layout/fragment_grouplist" />
 

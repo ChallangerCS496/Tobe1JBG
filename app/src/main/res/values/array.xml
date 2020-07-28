@@ -5,4 +5,9 @@
         <item name="weekly">매주</item>
         <item name="monthly">매월</item>
     </string-array>
+    <string-array name="rank_period_unit">
+        <item name="daily">일차</item>
+        <item name="weekly">주차</item>
+        <item name="monthly">개월차</item>
+    </string-array>
 </resources>

@@ -48,26 +48,26 @@ public class HomeFragment extends Fragment {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final Observer<ArrayList<MyGroupInfo>> contactObserver = new Observer<ArrayList<MyGroupInfo>>() {
-            @Override
-            public void onChanged(@Nullable final ArrayList<MyGroupInfo> newContacts) {
-                adapter.updateItems(newContacts);
-            }
-        };
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recview = root.findViewById(R.id.home_group_list);
-        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
+//        final Observer<ArrayList<MyGroupInfo>> contactObserver = new Observer<ArrayList<MyGroupInfo>>() {
+//            @Override
+//            public void onChanged(@Nullable final ArrayList<MyGroupInfo> newContacts) {
+//                adapter.updateItems(newContacts);
+//            }
+//        };
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+//        recview = root.findViewById(R.id.home_group_list);
 //        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
-        backupList = new ArrayList<>();
-
-
-        recview.setLayoutManager(layoutManager);
-        recview.setAdapter(adapter);
-
-        initializeContacts();
-        homeViewModel.getList().observe(getViewLifecycleOwner(), contactObserver);
-
-        requestRequiredPermissions();
+////        adapter = new LogAdapter(this.getContext(), getActivity(), new ArrayList<MyGroupInfo>());
+//        backupList = new ArrayList<>();
+//
+//
+//        recview.setLayoutManager(layoutManager);
+//        recview.setAdapter(adapter);
+//
+//        initializeContacts();
+//        homeViewModel.getList().observe(getViewLifecycleOwner(), contactObserver);
+//
+//        requestRequiredPermissions();
         return root;
     }
 
