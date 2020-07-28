@@ -5,14 +5,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="40dp"
     android:orientation="vertical">
-    <EditText
+    <TextView
         android:id="@+id/enter_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Name"
-        android:inputType="text"
-
+        android:text="Nick name은 친구를 찾는데 사용됩니다."
+        android:textSize="15sp"
         />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        />
+
     <EditText
         android:id="@+id/enter_nickname"
         android:layout_width="match_parent"
