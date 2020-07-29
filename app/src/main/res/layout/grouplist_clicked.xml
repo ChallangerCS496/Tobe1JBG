@@ -209,7 +209,7 @@
                             android:textSize="30dp"
                             android:text='그룹 랭킹'/>
                         <EditText
-                            android:layout_marginLeft="80dp"
+                            android:layout_marginLeft="50dp"
                             android:id="@+id/serach_index"
                             android:layout_gravity="right"
                             android:layout_width="wrap_content"

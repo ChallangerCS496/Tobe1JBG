@@ -107,7 +107,7 @@ public class GroupClickedActivity extends AppCompatActivity {
                 } else {
                     standard = "30";
                 }
-                get_RankData(group_id,standard,(Integer.parseInt(search_index.getText().toString())-1)+""); //데이터 Reload//
+                get_RankData(group_id,standard,(Integer.parseInt(search_index.getText().toString()))+""); //데이터 Reload//
             }
         });
 
